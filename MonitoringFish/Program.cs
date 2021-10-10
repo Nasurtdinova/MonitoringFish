@@ -21,26 +21,46 @@ namespace MonitoringFish
 
             DateTime dateFish = ConvertQueryDateToDateTime(dataValue[6].Split('=')[1]);
             var quality = new TempQuality(dateFish, new TimeSpan (0,Convert.ToInt32(dataValue[1].Split('=')[1]),0), doubleTemps);
-            //Fish mentai = new FrozenFish(quality, new TimeSpan(0, Convert.ToInt32(dataValue[3].Split('=')[1]), 0), Convert.ToDouble(dataValue[2].Split('=')[1]));
 
+            Fish mentai = new FrozenFish(quality, new TimeSpan(0, Convert.ToInt32(dataValue[3].Split('=')[1]), 0), Convert.ToDouble(dataValue[2].Split('=')[1]));
             Fish gorbusha = new ChilledFish(quality, new TimeSpan(0, Convert.ToInt32(dataValue[3].Split('=')[1]), 0), Convert.ToDouble(dataValue[2].Split('=')[1]), new TimeSpan(0, Convert.ToInt32(dataValue[5].Split('=')[1]), 0), Convert.ToDouble(dataValue[4].Split('=')[1]));
+            
             Console.WriteLine("<html><head><title>Otchet</title></head>");
             Console.WriteLine("<body>");
-            Console.WriteLine($"<p><h1>   Time             Fact    Norm    Deviation</h1><p>");
-            foreach (KeyValuePair <Dictionary<DateTime, double>, Dictionary<DateTime, double>> val in gorbusha.isValid())
+            Console.WriteLine($"<p><h1>       Time       Fact    Norm    Deviation</h1><p>");
+            if (dataValue[0].Split('=')[1] == "Chilled")
             {
-                foreach(KeyValuePair <DateTime, double> value in val.Key)
+                foreach (KeyValuePair<Dictionary<DateTime, double>, Dictionary<DateTime, double>> val in gorbusha.isValid())
                 {
-                    Console.WriteLine($"<p><h2>{value.Key}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
-                   
+                    int count = 0;
+                    foreach (KeyValuePair<DateTime, double> value in val.Key)
+                    {
+                        count++;
+                        Console.WriteLine($"<p><h2>{value.Key.ToString("dd.mm.yyyy hh:mm")}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
+                    }
+                    foreach (KeyValuePair<DateTime, double> value in val.Value)
+                    {
+                        count++;
+                        Console.WriteLine($"<p><h2>{value.Key}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
+                    }
+                    TimeSpan thresold = new TimeSpan(0, count * Convert.ToInt32(dataValue[1].Split('=')[1]), 0);
+                    Console.WriteLine($"<p><h2>The threshold is exceeded by {thresold.TotalMinutes} minutes</h2></p>");
                 }
-                foreach (KeyValuePair<DateTime, double> value in val.Value)
-                {
-                    Console.WriteLine($"<p><h2>{value.Key}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
-
-                }
-                Console.WriteLine($"{val.Value}");
             }
+            else
+            {
+                foreach (KeyValuePair<Dictionary<DateTime, double>, Dictionary<DateTime, double>> val in mentai.isValid())
+                {
+                    int count = 0;
+                    foreach (KeyValuePair<DateTime, double> value in val.Key)
+                    {
+                        count++;
+                        Console.WriteLine($"<p><h2>{value.Key.ToString("dd.mm.yyyy hh:mm")}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
+                    }
+                    TimeSpan thresold = new TimeSpan(0, count * Convert.ToInt32(dataValue[1].Split('=')[1]), 0);
+                    Console.WriteLine($"<p><h2>The threshold is exceeded by {thresold.TotalMinutes} minutes</h2></p>");
+                }
+            }           
             Console.WriteLine("</body></html>");
         }
 

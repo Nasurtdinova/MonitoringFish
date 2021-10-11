@@ -11,7 +11,7 @@ namespace MonitoringFish
         public Dictionary<DateTime, double> dateMax = new Dictionary<DateTime, double>();
         public Dictionary<DateTime, double> dateMin = new Dictionary<DateTime, double>();
 
-        public Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>> rrr = new Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>>();
+        public Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>> dateMaxMin = new Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>>();
         
         public abstract Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>> isValid();
 
@@ -38,10 +38,10 @@ namespace MonitoringFish
             if (threshold > deathTime)
             {
                 dateMax = (quality as TempQuality).GetDateTimeMax();
-                rrr.Add(dateMax, dateMin);
-                return rrr;
+                dateMaxMin.Add(dateMax, dateMin);
+                return dateMaxMin;
             }
-            return rrr;
+            return dateMaxMin;
         }
     }
 
@@ -64,13 +64,16 @@ namespace MonitoringFish
         {
             TimeSpan threshold = (quality as TempQuality).GetTempUpperTime(maxStoreTemp);
             TimeSpan threshold2 = (quality as TempQuality).GetTempLowerTime(minStoreTemp);
-            if (threshold2 < minDeathTime|| threshold > maxDeathTime)
+            if (threshold2 > minDeathTime)
+            {
+                dateMin = (quality as TempQuality).GetDateTimeMin();               
+            }
+            if (threshold > maxDeathTime)
             {
                 dateMax = (quality as TempQuality).GetDateTimeMax();
-                dateMin = (quality as TempQuality).GetDateTimeMin();
-                rrr.Add(dateMax, dateMin);
             }
-            return rrr;       
+            dateMaxMin.Add(dateMax, dateMin);
+            return dateMaxMin;       
         }
     }
 }

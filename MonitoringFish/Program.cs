@@ -8,8 +8,8 @@ namespace MonitoringFish
         static void Main(string[] args)
         {
             Console.WriteLine("Content-Type: text/html \n\n");
-            //var queryStr = Environment.GetEnvironmentVariable("QUERY_STRING");
-            string queryStr = "TypeFish=&interval=10&maxStoreTemp=3&maxDeathTime=20&minStoreTemp=-3&minDeathTime=30&date=2021-10-09T08%3A54&temperature=-5+5+6+5+7";
+            var queryStr = Environment.GetEnvironmentVariable("QUERY_STRING");
+            //string queryStr = "TypeFish=Chilled&interval=10&maxStoreTemp=3&maxDeathTime=40&minStoreTemp=-3&minDeathTime=20&date=2021-10-07T18%3A18&temperature=-5+5+-6+5+7+8";
             string[] dataValue = queryStr.Split('&');
 
             string[] temps = dataValue[7].Split('=')[1].Split('+');
@@ -19,16 +19,24 @@ namespace MonitoringFish
                 doubleTemps[i] = Convert.ToDouble(temps[i]);
             }
 
-            DateTime dateFish = ConvertQueryDateToDateTime(dataValue[6].Split('=')[1]);
-            var quality = new TempQuality(dateFish, new TimeSpan (0,Convert.ToInt32(dataValue[1].Split('=')[1]),0), doubleTemps);
+            string TypeFish = dataValue[0].Split('=')[1];
+            TimeSpan maxDeathTime = new TimeSpan(0, Convert.ToInt32(dataValue[3].Split('=')[1]), 0);
+            TimeSpan minDeathTime = new TimeSpan(0, Convert.ToInt32(dataValue[5].Split('=')[1]), 0);
+            double maxStoreTemp = Convert.ToDouble(dataValue[2].Split('=')[1]);
+            double minStoreTemp = Convert.ToDouble(dataValue[4].Split('=')[1]);
+            TimeSpan interval = new TimeSpan(0, Convert.ToInt32(dataValue[1].Split('=')[1]), 0);
 
-            Fish mentai = new FrozenFish(quality, new TimeSpan(0, Convert.ToInt32(dataValue[3].Split('=')[1]), 0), Convert.ToDouble(dataValue[2].Split('=')[1]));
-            Fish gorbusha = new ChilledFish(quality, new TimeSpan(0, Convert.ToInt32(dataValue[3].Split('=')[1]), 0), Convert.ToDouble(dataValue[2].Split('=')[1]), new TimeSpan(0, Convert.ToInt32(dataValue[5].Split('=')[1]), 0), Convert.ToDouble(dataValue[4].Split('=')[1]));
-            
+            DateTime dateFish = ConvertQueryDateToDateTime(dataValue[6].Split('=')[1]);
+            var quality = new TempQuality(dateFish, interval, doubleTemps);
+
+            Fish mentai = new FrozenFish(quality, maxDeathTime, maxStoreTemp);
+            Fish gorbusha = new ChilledFish(quality, maxDeathTime, maxStoreTemp, minDeathTime, minStoreTemp);
+
             Console.WriteLine("<html><head><title>Otchet</title></head>");
-            Console.WriteLine("<body>");
-            Console.WriteLine($"<p><h1>       Time       Fact    Norm    Deviation</h1><p>");
-            if (dataValue[0].Split('=')[1] == "Chilled")
+            Console.WriteLine("<body><table border=1 width=50%>");
+            Console.WriteLine("<tr align = center >");
+            Console.WriteLine($"<th><h2>Time      </th><th> Fact</th>    <th>Norm</th>    <th>Deviation</th></h2></tr>");
+            if (TypeFish == "Chilled")
             {
                 foreach (KeyValuePair<Dictionary<DateTime, double>, Dictionary<DateTime, double>> val in gorbusha.isValid())
                 {
@@ -36,18 +44,20 @@ namespace MonitoringFish
                     foreach (KeyValuePair<DateTime, double> value in val.Key)
                     {
                         count++;
-                        Console.WriteLine($"<p><h2>{value.Key.ToString("dd.mm.yyyy hh:mm")}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
+                        Console.WriteLine("<tr align = center >");
+                        Console.WriteLine($"<td><h2>{value.Key.ToString("dd.MM.yyyy hh:mm")} </td> <td>{value.Value} </td><td> {maxStoreTemp}  </td><td>{value.Value - maxStoreTemp}</td></h2></tr>");
                     }
                     foreach (KeyValuePair<DateTime, double> value in val.Value)
                     {
                         count++;
-                        Console.WriteLine($"<p><h2>{value.Key}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
+                        Console.WriteLine($"<tr align=center><td><h2>{value.Key.ToString("dd.MM.yyyy hh:mm")}</td> <td> {value.Value} </td><td> {minStoreTemp}  </td><td>{value.Value - minStoreTemp}</td></h2></tr>");
                     }
                     TimeSpan thresold = new TimeSpan(0, count * Convert.ToInt32(dataValue[1].Split('=')[1]), 0);
+                    Console.WriteLine("</table>");
                     Console.WriteLine($"<p><h2>The threshold is exceeded by {thresold.TotalMinutes} minutes</h2></p>");
                 }
             }
-            else
+            else if(TypeFish == "Frozen")
             {
                 foreach (KeyValuePair<Dictionary<DateTime, double>, Dictionary<DateTime, double>> val in mentai.isValid())
                 {
@@ -55,12 +65,13 @@ namespace MonitoringFish
                     foreach (KeyValuePair<DateTime, double> value in val.Key)
                     {
                         count++;
-                        Console.WriteLine($"<p><h2>{value.Key.ToString("dd.mm.yyyy hh:mm")}   {value.Value}       {Convert.ToDouble(dataValue[2].Split('=')[1])}          {value.Value - Convert.ToDouble(dataValue[2].Split('=')[1])}</h2></p>");
+                        Console.WriteLine("<tr align = center >");
+                        Console.WriteLine($"<td><h2>{value.Key.ToString("dd.MM.yyyy hh:mm")}</td><td>  {value.Value}</td><td>  {maxStoreTemp} </td><td> {value.Value - maxStoreTemp}</td></h2></tr>");
                     }
                     TimeSpan thresold = new TimeSpan(0, count * Convert.ToInt32(dataValue[1].Split('=')[1]), 0);
                     Console.WriteLine($"<p><h2>The threshold is exceeded by {thresold.TotalMinutes} minutes</h2></p>");
                 }
-            }           
+            }
             Console.WriteLine("</body></html>");
         }
 

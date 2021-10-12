@@ -33,9 +33,10 @@ namespace MonitoringFish
             Fish gorbusha = new ChilledFish(quality, maxDeathTime, maxStoreTemp, minDeathTime, minStoreTemp);
 
             Console.WriteLine("<html><head><title>Otchet</title></head>");
-            Console.WriteLine("<body><table border=1 width=50%>");
-            Console.WriteLine("<tr align = center >");
-            Console.WriteLine($"<th><h2>Time      </th><th> Fact</th>    <th>Norm</th>    <th>Deviation</th></h2></tr>");
+            Console.WriteLine("<body>");
+            Console.WriteLine("<table border = 1 width = 40%>");
+            Console.WriteLine("<tr align = center>");
+            Console.WriteLine($"<th>Time</th><th> Fact</th><th>Norm</th><th>Deviation</th></tr>");
             if (TypeFish == "Chilled")
             {
                 foreach (KeyValuePair<Dictionary<DateTime, double>, Dictionary<DateTime, double>> val in gorbusha.isValid())
@@ -45,16 +46,18 @@ namespace MonitoringFish
                     {
                         count++;
                         Console.WriteLine("<tr align = center >");
-                        Console.WriteLine($"<td><h2>{value.Key.ToString("dd.MM.yyyy hh:mm")} </td> <td>{value.Value} </td><td> {maxStoreTemp}  </td><td>{value.Value - maxStoreTemp}</td></h2></tr>");
+                        Console.WriteLine($"<td>{value.Key.ToString("dd.MM.yyyy hh:mm")}</td><td>{value.Value}</td><td>{maxStoreTemp}</td><td>{value.Value - maxStoreTemp}</td></tr>");
                     }
                     foreach (KeyValuePair<DateTime, double> value in val.Value)
                     {
                         count++;
-                        Console.WriteLine($"<tr align=center><td><h2>{value.Key.ToString("dd.MM.yyyy hh:mm")}</td> <td> {value.Value} </td><td> {minStoreTemp}  </td><td>{value.Value - minStoreTemp}</td></h2></tr>");
+                        Console.WriteLine($"<tr align=center><td>{value.Key.ToString("dd.MM.yyyy hh:mm")}</td><td>{value.Value}</td><td>{minStoreTemp} </td><td>{value.Value - minStoreTemp}</td></tr>");
                     }
                     TimeSpan thresold = new TimeSpan(0, count * Convert.ToInt32(dataValue[1].Split('=')[1]), 0);
-                    Console.WriteLine("</table>");
-                    Console.WriteLine($"<p><h2>The threshold is exceeded by {thresold.TotalMinutes} minutes</h2></p>");
+                    Console.WriteLine($"<p><h3>Type fish: {TypeFish}</h3></p>");
+                    Console.WriteLine($"<p><h3>Date ant time fish: {dateFish.ToString("dd.MM.yyyy hh:mm")}</h3></p>");
+                    Console.WriteLine($"<p><h3>Interval: {interval.TotalMinutes} minute</h3></p>");
+                    Console.WriteLine($"<p><h3>The threshold is exceeded by {thresold.TotalMinutes} minutes</h3></p>");
                 }
             }
             else if(TypeFish == "Frozen")
@@ -66,10 +69,13 @@ namespace MonitoringFish
                     {
                         count++;
                         Console.WriteLine("<tr align = center >");
-                        Console.WriteLine($"<td><h2>{value.Key.ToString("dd.MM.yyyy hh:mm")}</td><td>  {value.Value}</td><td>  {maxStoreTemp} </td><td> {value.Value - maxStoreTemp}</td></h2></tr>");
+                        Console.WriteLine($"<td>{value.Key.ToString("dd.MM.yyyy hh:mm")}</td><td>  {value.Value}</td><td>  {maxStoreTemp} </td><td> {value.Value - maxStoreTemp}</td></tr>");
                     }
                     TimeSpan thresold = new TimeSpan(0, count * Convert.ToInt32(dataValue[1].Split('=')[1]), 0);
-                    Console.WriteLine($"<p><h2>The threshold is exceeded by {thresold.TotalMinutes} minutes</h2></p>");
+                    Console.WriteLine($"<p><h3>Type fish: {TypeFish}</h3></p>");
+                    Console.WriteLine($"<p><h3>Date ant time fish: {dateFish.ToString("dd.MM.yyyy hh:mm")}</h3></p>");
+                    Console.WriteLine($"<p><h3>Interval: {interval.TotalMinutes} minute</h3></p>");
+                    Console.WriteLine($"<p><h3>The threshold is exceeded by {thresold.TotalMinutes} minutes</h3></p>");
                 }
             }
             Console.WriteLine("</body></html>");

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
-namespace MonitoringFish
+namespace FishMonitoringCore
 {
     public abstract class Quality { }
 
@@ -32,7 +31,7 @@ namespace MonitoringFish
             this.temperature = temp;
         }
 
-        public TempQuality(DateTime begin, TimeSpan interval, double[] data):this()
+        public TempQuality(DateTime begin, TimeSpan interval, double[] data) : this()
         {
             temperature.Add(begin, data[0]);
             for (int i = 1; i < data.Length; i++)
@@ -53,7 +52,7 @@ namespace MonitoringFish
                 temperature.Add(time, Double.Parse(t));
                 time += interval;
             }
-            this.interval = interval;          
+            this.interval = interval;
         }
 
         public Dictionary<DateTime, double> GetDateTimeMax()

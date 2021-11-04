@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.IO;
+using FishMonitoringCore;
 
 namespace MonitoringFish
 {
@@ -20,8 +21,8 @@ namespace MonitoringFish
 
             string TypeFish = values.GetResult("TypeFish");
             string Name = values.GetResult("Name");
-            TimeSpan interval = new TimeSpan(0, Convert.ToInt32(values.GetResult("interval")), 0);
-            DateTime dateFish = ConvertQueryDateToDateTime(values.GetResult("dateFish"));
+            TimeSpan interval = values.GetInterval();
+            DateTime dateFish = values.ConvertQueryDateToDateTime();
 
             MySqlConnection conn = new MySqlConnection(connStr);
             conn.Open();
@@ -104,54 +105,7 @@ namespace MonitoringFish
                 Console.WriteLine(e.ToString());
             }
             conn.Close();
-        }
-
-        public static DateTime ConvertQueryDateToDateTime(string date)
-        {
-            string[] dateAndTimeFish = date.Split('T');
-            string[] dateNumbers = dateAndTimeFish[0].Split('-');
-            string[] timeNumbers = dateAndTimeFish[1].Split('%');
-            int minute = Convert.ToInt32(timeNumbers[1].Split('A')[1]);
-            DateTime dateFish = new DateTime(Convert.ToInt32(dateNumbers[0]), Convert.ToInt32(dateNumbers[1]), Convert.ToInt32(dateNumbers[2]), Convert.ToInt32(timeNumbers[0]), minute, 0);
-            return dateFish;
-        }
-    }
-
-    public class Values
-    {
-        public Dictionary<string, string> result = new Dictionary<string, string>();
-        public Values(int dataLen)
-        {
-            var rowPostData = new char[dataLen + 1];
-            for (int i = 0; i < dataLen; ++i)
-            {
-                rowPostData[i] = (char)Console.Read();
-            }
-
-            var fields = new String(rowPostData).Split("&");
-
-            result.Add("Temps", fields[4].Split('=')[1]);
-            result.Add("TypeFish", fields[1].Split('=')[1]);
-            result.Add("Name", fields[0].Split('=')[1]);
-            result.Add("interval", fields[2].Split('=')[1]);
-            result.Add("dateFish", fields[3].Split('=')[1]);
-        }
-
-        public double[] GetTemps()
-        {
-            string[] temps = result["Temps"].Split('+');
-            double[] doubleTemps = new double[temps.Length];
-            for (int i = 0; i < temps.Length; i++)
-            {
-                doubleTemps[i] = Convert.ToDouble(temps[i]);
-            }
-            return doubleTemps;
-        }
-
-        public string GetResult(string key)
-        {
-            return result[key];
-        }
+        }        
     }
 }
 

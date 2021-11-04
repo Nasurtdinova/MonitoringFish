@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonitoringFish
+namespace FishMonitoringCore
 {
     public abstract class Fish
     {
@@ -12,7 +12,7 @@ namespace MonitoringFish
         public Dictionary<DateTime, double> dateMin = new Dictionary<DateTime, double>();
 
         public Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>> dateMaxMin = new Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>>();
-        
+
         public abstract Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>> isValid();
 
         public Fish(Quality q)
@@ -25,14 +25,14 @@ namespace MonitoringFish
     {
         public double maxStoreTemp;
         public TimeSpan deathTime;
-     
+
         public FrozenFish(Quality q, TimeSpan t, double max) : base(q)
         {
             maxStoreTemp = max;
             deathTime = t;
         }
 
-        public override Dictionary<Dictionary<DateTime,double>,Dictionary<DateTime, double>> isValid()
+        public override Dictionary<Dictionary<DateTime, double>, Dictionary<DateTime, double>> isValid()
         {
             TimeSpan threshold = (quality as TempQuality).GetTempUpperTime(maxStoreTemp);
             if (threshold > deathTime)
@@ -52,7 +52,7 @@ namespace MonitoringFish
         public TimeSpan minDeathTime;
         public TimeSpan maxDeathTime;
 
-        public ChilledFish(Quality q, TimeSpan maxd, double max,TimeSpan mind,double min)  : base(q) 
+        public ChilledFish(Quality q, TimeSpan maxd, double max, TimeSpan mind, double min) : base(q)
         {
             maxStoreTemp = max;
             minStoreTemp = min;
@@ -66,14 +66,14 @@ namespace MonitoringFish
             TimeSpan threshold2 = (quality as TempQuality).GetTempLowerTime(minStoreTemp);
             if (threshold2 > minDeathTime)
             {
-                dateMin = (quality as TempQuality).GetDateTimeMin();               
+                dateMin = (quality as TempQuality).GetDateTimeMin();
             }
             if (threshold > maxDeathTime)
             {
                 dateMax = (quality as TempQuality).GetDateTimeMax();
             }
             dateMaxMin.Add(dateMax, dateMin);
-            return dateMaxMin;       
+            return dateMaxMin;
         }
     }
 }

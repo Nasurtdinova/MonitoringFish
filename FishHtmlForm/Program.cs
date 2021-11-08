@@ -13,7 +13,7 @@ namespace FishHtmlForm
             string html;
 
             Console.WriteLine("Content-Type: text/html \n\n");
-            string connStr = "server=192.168.69.254;user=guzel;database=Monitoring;port=3306;password=20032003";
+            string connStr = "server=192.168.70.254;user=guzel;database=Monitoring;port=3306;password=20032003";
             MySqlConnection conn = new MySqlConnection(connStr);
             conn.Open();
             string sql = "SELECT  distinct Name FROM Fish";

@@ -36,6 +36,20 @@ namespace MonitoringFish
             return doubleTemps;
         }
 
+        public List<string> GetNames()
+        {
+            List<string> s = new List<string>();
+            s.Add(result["Name"]);
+            return s;
+        }
+
+        public List<string> GetTypes()
+        {
+            List<string> k = new List<string>();
+            k.Add(result["TypeFish"]);
+            return k;
+        }
+
         public TimeSpan GetInterval()
         {
             return new TimeSpan(0, Convert.ToInt32(result["interval"]), 0);

@@ -15,12 +15,15 @@ namespace MonitoringFish
             var dataLen = int.Parse(Environment.GetEnvironmentVariable("CONTENT_LENGTH"));
            
             //string queryStr = "Name=Mentai&TypeFish=Frozen&interval=10&date=2021-10-07T18%3A18&temperature=-5+5+-6+5+7+8+9+6+7";
-            string connStr = "server=192.168.69.254;user=guzel;database=Monitoring;port=3306;password=20032003";
+            string connStr = "server=192.168.70.254;user=guzel;database=Monitoring;port=3306;password=20032003";
 
             Values values = new Values(dataLen);
 
             string TypeFish = values.GetResult("TypeFish");
             string Name = values.GetResult("Name");
+            //List<string> TypeFish = values.GetTypes();
+            //List<string> Name = values.GetNames();
+
             TimeSpan interval = values.GetInterval();
             DateTime dateFish = values.ConvertQueryDateToDateTime();
 
